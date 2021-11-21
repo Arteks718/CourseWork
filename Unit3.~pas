@@ -1,0 +1,255 @@
+unit Unit3;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Menus, StdCtrls, Grids, DBGrids, ExtCtrls, ComCtrls, DBCtrls;
+
+type
+  TForm3 = class(TForm)
+    mm1: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    Panel1: TPanel;
+    dbgrd1: TDBGrid;
+    lbl1: TLabel;
+    Edit1: TEdit;
+    lbl2: TLabel;
+    Edit2: TEdit;
+    Panel2: TPanel;
+    lbl3: TLabel;
+    DateTimePicker1: TDateTimePicker;
+    Button2: TButton;
+    Panel3: TPanel;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    Edit3: TEdit;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    ud1: TUpDown;
+    Button1: TButton;
+    grp1: TGroupBox;
+    lbl6: TLabel;
+    lbl8: TLabel;
+    lbl10: TLabel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    dbgrd2: TDBGrid;
+    DBLookupComboBox1: TDBLookupComboBox;
+    Label7: TLabel;
+    Label8: TLabel;
+    procedure N5Click(Sender: TObject);
+    procedure N4Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure dbgrd1CellClick(Column: TColumn);
+    procedure N3Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+  CenaTov, ChekNom, SumChek, TabNom: string;
+
+
+implementation
+
+uses Unit1, Unit2, Unit4, Unit7, Unit8;
+
+{$R *.dfm}
+
+
+procedure TForm3.N5Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm3.N4Click(Sender: TObject);
+begin
+  Form4.Show();
+end;
+
+procedure TForm3.Button1Click(Sender: TObject);
+begin
+  {DBLookupComboBox1.KeyValue:= StrToInt(DataModule1.DataSEnter.DataSet.Fields[0].AsString);
+  DBLookupComboBox1.KeyValue := 1;}
+  If  DBLookupComboBox1.KeyValue  = 1 then ShowMessage('Виберіть користувача')
+  else
+  begin
+    lbl3.Caption := 'Менеджер: ' + DBLookupComboBox1.Text;
+    DBLookupComboBox1.Visible:=False;
+    Panel1.Visible := true;
+    Panel2.Visible := true;
+    dbgrd1.Visible :=True;
+    N1.Enabled :=true;
+    N2.Enabled :=true;
+    N3.Enabled :=true;
+    N5.Enabled :=true;
+    Button1.Enabled :=False;
+    Label7.Visible:=True;
+    Label8.Visible:=True;
+    Label7.Caption:=IntToStr(DBLookupComboBox1.KeyValue);
+  end;
+
+end;
+
+procedure TForm3.dbgrd1CellClick(Column: TColumn);
+begin
+  Label1.Caption:= DataModule1.DataSTovari.DataSet.Fields[2].AsString;
+  Label2.Caption:= DataModule1.DataSTovari.DataSet.Fields[3].AsString;
+  Label3.Caption:= DataModule1.DataSTovari.DataSet.Fields[0].AsString;
+
+  CenaTov:=IntToStr(DataModule1.DataSTovari.DataSet.Fields[3].AsInteger * strtoint(Edit3.Text));
+  Label5.Caption:= 'Вартість '+ CenaTov + ' грн.';
+end;
+
+procedure TForm3.N3Click(Sender: TObject);
+begin
+    DBLookupComboBox1.KeyValue:=1;
+    DBLookupComboBox1.Visible:=true;
+    Panel1.Visible := false;
+    Panel2.Visible := false;
+    grp1.Visible:=false;
+    Panel3.Visible := false;
+    dbgrd1.Visible :=false;
+    N1.Enabled :=false;
+    N2.Enabled :=false;
+    N3.Enabled :=false;
+    N5.Enabled :=false;
+    Button1.Enabled :=true;
+    Form1.Hide();
+end;
+
+procedure TForm3.Edit1Change(Sender: TObject);
+begin
+  DataModule1.ADOQTovari.Close;
+DataModule1.ADOQTovari.SQL.Text:= 'SELECT Товар.Код_товара, Виробник.Категорія, Товар.Назва, Товар.Ціна, Товар.Характеристики '
++ 'FROM Виробник INNER JOIN Товар ON Виробник.[Код_виробника] = Товар.[Код_виробника] WHERE Товар.Код_товара LIKE "%'+Edit1.Text+'%" ORDER BY Товар.Код_товара';
+DataModule1.ADOQTovari.Open;
+end;
+
+procedure TForm3.Edit2Change(Sender: TObject);
+begin
+  DataModule1.ADOQTovari.Close;
+DataModule1.ADOQTovari.SQL.Text:= 'SELECT Товар.Код_товара, Виробник.Категорія, Товар.Назва, Товар.Ціна, Товар.Характеристики '
++ 'FROM Виробник INNER JOIN Товар ON Виробник.[Код_виробника] = Товар.[Код_виробника] WHERE Виробник.Категорія LIKE "%'+Edit2.Text+'%" ORDER BY Товар.Код_товара';
+DataModule1.ADOQTovari.Open;
+end;
+
+procedure TForm3.Button2Click(Sender: TObject);
+begin
+  grp1.Visible:=true;
+  Panel3.Visible:=true;
+
+  DataModule1.ADOQWork.Close;
+  DataModule1.ADOQWork.SQL.Text:= 'INSERT INTO Чек ( [Дата], [Загальна_сума] )  Values (:dt, 0) ';
+  DataModule1.ADOQWork.Parameters.ParamByName('dt').Value:=FormatDateTime('dd.mm.yyyy', DateTimePicker1.Date);
+  DataModule1.ADOQWork.ExecSQL;
+
+  FormShow(Sender);
+
+  DataModule1.ADOQWork.close;
+  DataModule1.ADOQWork.SQL.text:=' select * from Чек order by Код_чеку';
+  DataModule1.ADOQWork.Open;
+
+  DataModule1.ADOQCheck.Last;
+  Cheknom:=DataModule1.DataSCheck.DataSet.Fields[0].AsString;
+  Label6.Caption:='Чек №'+ Cheknom;
+
+  DataModule1.ADOQCheckRep.Close;
+  DataModule1.ADOQCheckRep.SQL.Text:= 'SELECT Продажа.Код_продажу, Чек.Дата, Товар.Назва, Продажа.Кількість, Продажа.Ціна, Персонал.ПІБ, Продажа.Код_чеку, Товар.Ціна'
+  + ' FROM Чек INNER JOIN ((Виробник INNER JOIN Товар ON Виробник.Код_виробника = Товар.Код_виробника) INNER JOIN (Персонал INNER JOIN Продажа ON'
+  + ' Персонал.[Табельний номер] = Продажа.[Табельний номер]) ON Товар.Код_товара = Продажа.Код_товара) ON Чек.Код_чеку = Продажа.Код_чеку'
+  + ' WHERE (((Продажа.Код_чеку)= '+Cheknom+'))';
+  DataModule1.ADOQCheckRep.Open;
+  SumChek:='0';
+  label4.caption:= 'Сумма по чеку (грн): ' + SumChek;
+end;
+
+procedure TForm3.N2Click(Sender: TObject);
+begin
+  Form1.Show();
+end;
+
+procedure TForm3.Button4Click(Sender: TObject);
+begin
+  DataModule1.ADOQCheckRep.Close;
+  DataModule1.ADOQCheckRep.SQL.Text:='SELECT Продажа.Код_продажу, Чек.Дата, Товар.Назва, Товар.Ціна, Персонал.ПІБ, Продажа.Кількість, Продажа.Ціна, Продажа.Код_чеку '
++ 'FROM Чек INNER JOIN ((Виробник INNER JOIN Товар ON Виробник.Код_виробника = Товар.Код_виробника) INNER JOIN (Персонал INNER JOIN Продажа ON Персонал.[Табельний номер] = Продажа.[Табельний номер]) '
++ 'ON Товар.Код_товара = Продажа.Код_товара) ON Чек.Код_чеку = Продажа.Код_чеку  WHERE(((Продажи.Код_чеку)='+Cheknom+'))';
+   DataModule1.ADOQCheckRep.Open;
+  Form7.QRLabel2.Caption:='Дата: ' + DateToStr(DateTimePicker1.Date);
+  Form7.QRLabel3.Caption:= lbl3.caption;
+  Form7.QRLabel1.Caption:= 'Чек №' + ChekNom;
+  Form7.QRLabel12.Caption:= 'Сума по чеку, грн: ' + SumChek;
+
+  Form7.QuickRep1.PreviewModal;
+end;
+
+procedure TForm3.Button3Click(Sender: TObject);
+begin
+DataModule1.ADOQWork.Close;
+DataModule1.ADOQWork.SQL.Text:= 'INSERT INTO Продажа(Код_товара, Код_чеку, [Табельний номер], Кількість, Ціна)'
++ ' VALUES('+Label3.Caption+', '+ChekNom+', '+Label7.Caption+', '+Edit3.Text+', '+inttostr(strtoint(Edit3.Text)*strtoint(Label2.Caption))+')';
+DataModule1.ADOQWork.ExecSQL;
+
+DataModule1.ADOQCheckRep.Close;
+DataModule1.ADOQCheckRep.SQL.Text:='SELECT Продажа.Код_продажу, Чек.Дата, Товар.Назва, Продажа.Кількість, Продажа.Ціна, Персонал.ПІБ, Продажа.Код_чеку, Товар.Ціна'
++ ' FROM Чек INNER JOIN ((Виробник INNER JOIN Товар ON Виробник.Код_виробника = Товар.Код_виробника) INNER JOIN (Персонал INNER JOIN Продажа ON Персонал.[Табельний номер] = Продажа.[Табельний номер])'
++ ' ON Товар.Код_товара = Продажа.Код_товара) ON Чек.Код_чеку = Продажа.Код_чеку WHERE((Продажа.Код_чеку)='+Cheknom+')';
+DataModule1.ADOQCheckRep.Open;
+
+DataModule1.ADOQWork.Close;
+DataModule1.ADOQWork.SQL.Text:='SELECT Sum(Продажа.[Ціна]) AS [Sum-Сума] FROM Продажа GROUP BY Продажа.[Код_чеку] HAVING (((Продажа.[Код_чеку])= '+ChekNom+'))';
+DataModule1.ADOQWork.Open;
+SumChek := DataModule1.DataSWork.DataSet.Fields[0].AsString;
+Label4.Caption := 'Сумма по чеку (грн): ' + SumChek;
+
+DataModule1.ADOQWork.Close;
+DataModule1.ADOQWork.SQL.Text:='UPDATE Чек SET Чек.[Загальна_Сума] = '+SumChek+' WHERE((Чек.[Код_чеку]) = '+ChekNom+')';
+DataModule1.ADOQWork.ExecSQL;
+
+FormShow(Sender);
+end;
+
+procedure TForm3.FormShow(Sender: TObject);
+begin
+  DateTimePicker1.Date := now;
+
+  DataModule1.ADOQCheck.close;
+  DataModule1.ADOQCheck.SQL.text:=' select * from Чек order by Код_чеку';
+  DataModule1.ADOQCheck.Open;
+
+  DBLookupComboBox1.KeyValue:=1;
+end;
+
+procedure TForm3.Button5Click(Sender: TObject);
+begin
+grp1.Visible:= False;
+Panel3.Visible:=False;
+Label1.Caption:='';
+Label2.Caption:='';
+Label3.Caption:='';
+Edit3.Text:='1';
+end;
+
+end.
